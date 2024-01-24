@@ -5,11 +5,13 @@ import Customer from "../../customer/entity/customer";
 
 export default class OrderService {
   static placeOrder(customer: Customer, items: OrderItem[]): Order {
+
     if (items.length === 0) {
       throw new Error("Order must have at least one item");
     }
+
     const order = new Order(uuid(), customer.id, items);
-    customer.addRewardPoints(order.total() / 2);
+    customer.addRewardPoints(order.total() / 2); //Adiciona a metade do total para o RewardPoints.
     return order;
   }
 
