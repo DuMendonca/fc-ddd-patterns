@@ -1,0 +1,49 @@
+import Product from "../../domain/product/entity/product";
+import ProductRepositoryInterface from "../../domain/repository/product-repository.interface";
+import ProductModel from "../db/sequelize/model/product.model";
+
+/**
+ * Realiza o desacoplamento do repositorio com a entidade.
+ */
+export default class ProductRepository implements ProductRepositoryInterface {
+    async create(entity: Product): Promise<void> {
+        await ProductModel.create({
+            id: entity.id,
+            name: entity.name,
+            price: entity.price
+        });
+    }
+    async update(entity: Product): Promise<void> {
+        await ProductModel.update({
+            name: entity.name,
+            price: entity.price
+        },
+            {
+                where: {
+                    id: entity.id
+                }
+            });
+    }
+    async find(id: string): Promise<Product> {
+        const productModel = await ProductModel.findOne({ where: { id: id }});
+
+        return new Product(
+            productModel.id,
+            productModel.name,
+            productModel.price
+        );
+    }
+    async findAll(): Promise<Product[]> {
+        const productModels = await ProductModel.findAll();
+
+        //Recuperou todos os produtos, para cada um deles ele cria um novo objeto.
+        return productModels.map(productModel => {
+            return new Product(
+                productModel.id,
+                productModel.name,
+                productModel.price
+            );
+        });
+    }
+
+}
